@@ -1,0 +1,313 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - {{ parent() }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .auth-container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .auth-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .auth-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+        padding: 2rem;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .auth-body {
+        padding: 2rem;
+    }
+
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+
+    .form-floating>.form-control {
+        height: calc(3.5rem + 2px);
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+
+    .form-floating>.form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .form-floating>label {
+        color: #6c757d;
+    }
+
+    .btn-register {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .form-check {
+        margin: 1.5rem 0;
+        padding-left: 2rem;
+    }
+
+    .form-check-input {
+        margin-top: 0.3rem;
+        border-radius: 4px;
+    }
+
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+
+    .auth-footer {
+        text-align: center;
+        padding: 1rem 2rem 2rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .auth-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .auth-link:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    .alert {
+        border-radius: 10px;
+        border: none;
+        margin-bottom: 1.5rem;
+    }
+
+    .invalid-feedback {
+        display: block;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .password-strength {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .strength-bar {
+        height: 4px;
+        border-radius: 2px;
+        background: #e9ecef;
+        overflow: hidden;
+        margin-top: 0.25rem;
+    }
+
+    .strength-fill {
+        height: 100%;
+        transition: all 0.3s;
+        border-radius: 2px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="auth-container">
+    <div class="card auth-card">
+        <div class="auth-header">
+            <h2 class="mb-0">
+                <i class="fas fa-user-plus me-2"></i>
+                Créer un compte
+            </h2>
+            <p class="mb-0 mt-2 opacity-75">Rejoignez-nous pour accéder à la recherche d'entreprises</p>
+        </div>
+
+        <div class="auth-body">
+            {% for flash_error in app.flashes('verify_email_error') %}
+            <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+            {% endfor %}
+
+            {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form_widget(registrationForm.prenom, {
+                        'attr': {
+                        'class': 'form-control' ~ (form_errors(registrationForm.prenom) ? ' is-invalid' : ''),
+                        'placeholder': 'Prénom'
+                        }
+                        }) }}
+                        {{ form_label(registrationForm.prenom) }}
+                        {{ form_errors(registrationForm.prenom) }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form_widget(registrationForm.nom, {
+                        'attr': {
+                        'class': 'form-control' ~ (form_errors(registrationForm.nom) ? ' is-invalid' : ''),
+                        'placeholder': 'Nom'
+                        }
+                        }) }}
+                        {{ form_label(registrationForm.nom) }}
+                        {{ form_errors(registrationForm.nom) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-floating">
+                {{ form_widget(registrationForm.email, {
+                'attr': {
+                'class': 'form-control' ~ (form_errors(registrationForm.email) ? ' is-invalid' : ''),
+                'placeholder': 'Email'
+                }
+                }) }}
+                {{ form_label(registrationForm.email) }}
+                {{ form_errors(registrationForm.email) }}
+            </div>
+
+            <div class="form-floating">
+                {{ form_widget(registrationForm.phone, {
+                'attr': {
+                'class': 'form-control',
+                'placeholder': 'Téléphone (optionnel)'
+                }
+                }) }}
+                {{ form_label(registrationForm.phone) }}
+            </div>
+
+            <div class="form-floating">
+                {{ form_widget(registrationForm.plainPassword.first, {
+                'attr': {
+                'class': 'form-control password-input' ~ (form_errors(registrationForm.plainPassword.first) ? '
+                is-invalid' : ''),
+                'placeholder': 'Mot de passe'
+                }
+                }) }}
+                {{ form_label(registrationForm.plainPassword.first) }}
+                {{ form_errors(registrationForm.plainPassword.first) }}
+                <div class="password-strength" id="password-strength" style="display: none;">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strength-fill"></div>
+                    </div>
+                    <small id="strength-text" class="text-muted"></small>
+                </div>
+            </div>
+
+            <div class="form-floating">
+                {{ form_widget(registrationForm.plainPassword.second, {
+                'attr': {
+                'class': 'form-control' ~ (form_errors(registrationForm.plainPassword.second) ? ' is-invalid' : ''),
+                'placeholder': 'Confirmer le mot de passe'
+                }
+                }) }}
+                {{ form_label(registrationForm.plainPassword.second) }}
+                {{ form_errors(registrationForm.plainPassword.second) }}
+            </div>
+
+            <div class="form-check">
+                {{ form_widget(registrationForm.agreeTerms, {
+                'attr': {
+                'class': 'form-check-input' ~ (form_errors(registrationForm.agreeTerms) ? ' is-invalid' : '')
+                }
+                }) }}
+                {{ form_label(registrationForm.agreeTerms, null, {
+                'label_attr': {'class': 'form-check-label'}
+                }) }}
+                {{ form_errors(registrationForm.agreeTerms) }}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-register">
+                <i class="fas fa-user-plus me-2"></i>
+                Créer mon compte
+            </button>
+
+            {{ form_end(registrationForm) }}
+        </div>
+
+        <div class="auth-footer">
+            <p class="mb-0">
+                Vous avez déjà un compte ?
+                <a href="{{ path('app_login') }}" class="auth-link">
+                    <i class="fas fa-sign-in-alt me-1"></i>
+                    Se connecter
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const passwordInput = document.querySelector('.password-input');
+        const strengthDiv = document.getElementById('password-strength');
+        const strengthFill = document.getElementById('strength-fill');
+        const strengthText = document.getElementById('strength-text');
+
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function () {
+                const password = this.value;
+                const strength = calculatePasswordStrength(password);
+
+                if (password.length > 0) {
+                    strengthDiv.style.display = 'block';
+                    updateStrengthIndicator(strength);
+                } else {
+                    strengthDiv.style.display = 'none';
+                }
+            });
+        }
+
+        function calculatePasswordStrength(password) {
+            let score = 0;
+
+            if (password.length >= 8) score += 1;
+            if (password.match(/[a-z]/)) score += 1;
+            if (password.match(/[A-Z]/)) score += 1;
+            if (password.match(/[0-9]/)) score += 1;
+            if (password.match(/[^a-zA-Z0-9]/)) score += 1;
+
+            return score;
+        }
+
+        function updateStrengthIndicator(strength) {
+            const colors = ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#28a745'];
+            const texts = ['Très faible', 'Faible', 'Moyen', 'Fort', 'Très fort'];
+            const widths = ['20%', '40%', '60%', '80%', '100%'];
+
+            strengthFill.style.width = widths[strength] || '0%';
+            strengthFill.style.backgroundColor = colors[strength] || '#e9ecef';
+            strengthText.textContent = texts[strength] || '';
+            strengthText.style.color = colors[strength] || '#6c757d';
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,514 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche d'Entreprises - Accueil{% endblock %}
+
+{% block body %}
+<!-- Carte de recherche -->
+<div class="row">
+    <div class="col-12">
+        <div class="card search-card">
+            <div class="card-header">
+                <h3 class="mb-0">
+                    <i class="fas fa-search me-2"></i>
+                    Recherche d'Entreprises
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <form id="searchForm">
+                    <!-- Section Informations générales -->
+                    <div class="filter-section">
+                        <h5 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            Informations générales
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nom" class="form-label fw-semibold">Nom de l'entreprise</label>
+                                <input type="text" class="form-control" id="nom" name="nom"
+                                    placeholder="Saisissez le nom de l'entreprise">
+                                <div class="form-text">Recherche par nom ou raison sociale</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="forme_juridique" class="form-label fw-semibold">Nature juridique</label>
+                                <select class="form-select" id="forme_juridique" name="forme_juridique">
+                                    <option value="">Toutes les formes juridiques</option>
+                                    {% for code, libelle in formes_juridiques %}
+                                    <option value="{{ code }}">{{ libelle }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="etat_administratif" class="form-label fw-semibold">État
+                                    administratif</label>
+                                <select class="form-select" id="etat_administratif" name="etat_administratif">
+                                    <option value="">Tous les états</option>
+                                    <option value="A">Entreprises actives</option>
+                                    <option value="C">Entreprises cessées</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Localisation -->
+                    <div class="filter-section">
+                        <h5 class="section-title">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Localisation
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="region" class="form-label fw-semibold">Région</label>
+                                <select class="form-select" id="region" name="region">
+                                    <option value="">Toutes les régions</option>
+                                    {% for code, libelle in regions %}
+                                    <option value="{{ code }}">{{ libelle }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="departement" class="form-label fw-semibold">Département</label>
+                                <input type="text" class="form-control" id="departement" name="departement"
+                                    placeholder="Ex: 75, 69, 13..." maxlength="3">
+                                <div class="form-text">Code département (2 ou 3 chiffres)</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="ville" class="form-label fw-semibold">Ville</label>
+                                <input type="text" class="form-control" id="ville" name="ville"
+                                    placeholder="Nom de la ville">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Activité -->
+                    <div class="filter-section">
+                        <h5 class="section-title">
+                            <i class="fas fa-briefcase"></i>
+                            Activité et effectifs
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="code_naf" class="form-label fw-semibold">Code NAF/APE</label>
+                                <input type="text" class="form-control" id="code_naf" name="code_naf"
+                                    placeholder="Ex: 62.01Z, 47.11F..." maxlength="6">
+                                <div class="form-text">Code d'activité principale (5 caractères + lettre)</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="section_activite" class="form-label fw-semibold">Section d'activité</label>
+                                <select class="form-select" id="section_activite" name="section_activite">
+                                    <option value="">Toutes les sections</option>
+                                    {% for code, libelle in secteurs_activite %}
+                                    <option value="{{ code }}">{{ code }} - {{ libelle }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="tranche_effectifs" class="form-label fw-semibold">Tranche
+                                    d'effectifs</label>
+                                <select class="form-select" id="tranche_effectifs" name="tranche_effectifs">
+                                    <option value="">Tous les effectifs</option>
+                                    {% for code, libelle in tranches_effectifs %}
+                                    <option value="{{ code }}">{{ libelle }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Dates -->
+                    <div class="filter-section">
+                        <h5 class="section-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Période de création
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="date_creation_min" class="form-label fw-semibold">Date de création
+                                    (minimum)</label>
+                                <input type="date" class="form-control" id="date_creation_min" name="date_creation_min">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="date_creation_max" class="form-label fw-semibold">Date de création
+                                    (maximum)</label>
+                                <input type="date" class="form-control" id="date_creation_max" name="date_creation_max">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Boutons d'action -->
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-gradient me-3">
+                            <span class="loading-spinner spinner-border spinner-border-sm me-2" role="status"></span>
+                            <i class="fas fa-search me-2"></i>
+                            Rechercher
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="resetForm">
+                            <i class="fas fa-undo me-2"></i>
+                            Réinitialiser
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistiques rapides -->
+<div id="statsRow" class="row mt-4" style="display: none;">
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number" id="totalResults">0</div>
+            <div class="stats-label">Entreprises trouvées</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number" id="avgEmployees">-</div>
+            <div class="stats-label">Effectif moyen</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number" id="topSector">-</div>
+            <div class="stats-label">Secteur principal</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number" id="activeCompanies">-</div>
+            <div class="stats-label">Entreprises actives</div>
+        </div>
+    </div>
+</div>
+
+<!-- Zone des alertes -->
+<div id="alertContainer" class="mt-3"></div>
+
+<!-- Carte des résultats -->
+<div class="results-card" id="resultsCard" style="display: none;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">
+            <i class="fas fa-list me-2"></i>
+            Résultats de la recherche
+        </h3>
+        <div>
+            <button type="button" class="btn btn-export" id="exportBtn">
+                <i class="fas fa-download me-2"></i>
+                Exporter CSV
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Nom de l'entreprise</th>
+                        <th>SIREN</th>
+                        <th>SIRET</th>
+                        <th>Date création</th>
+                        <th>Adresse</th>
+                        <th>Nature juridique</th>
+                        <th>Code APE</th>
+                        <th>Secteur</th>
+                        <th>Dirigeants</th>
+                        <th>Effectifs</th>
+                        <th>Nb étab.</th>
+                        <th>État</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                    <!-- Les résultats seront injectés ici via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function () {
+        let currentSearchData = null;
+        let dataTable = null;
+
+        // Initialisation de DataTable
+        function initDataTable() {
+            if (dataTable) {
+                dataTable.destroy();
+            }
+
+            dataTable = $('#resultsTable').DataTable({
+                responsive: true,
+                pageLength: 25,
+                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json'
+                },
+                columnDefs: [
+                    { targets: [1, 2, 4, 10], className: 'text-center' },
+                    { targets: [3], className: 'text-nowrap text-center' },
+                    { targets: [8, 9], className: 'text-center' },
+                    { targets: [11], className: 'text-center' }
+                ],
+                order: [[0, 'asc']],
+                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                    '<"row"<"col-sm-12"tr>>' +
+                    '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
+            });
+        }
+
+        // Gestion du formulaire de recherche
+        $('#searchForm').on('submit', function (e) {
+            e.preventDefault();
+            performSearch();
+        });
+
+        // Bouton de réinitialisation
+        $('#resetForm').on('click', function () {
+            $('#searchForm')[0].reset();
+            hideResults();
+            hideStats();
+            clearAlerts();
+        });
+
+        // Fonction de recherche
+        function performSearch() {
+            const formData = new FormData($('#searchForm')[0]);
+            const searchData = Object.fromEntries(formData.entries());
+
+            // Correction du nom du champ pour correspondre à l'API
+            if (searchData.forme_juridique) {
+                searchData.nature_juridique = searchData.forme_juridique;
+                delete searchData.forme_juridique;
+            }
+
+            currentSearchData = searchData;
+
+            // Affichage du spinner
+            $('.loading-spinner').show();
+            $('#searchForm button[type="submit"]').prop('disabled', true);
+
+            // Effacer les alertes précédentes
+            clearAlerts();
+
+            $.ajax({
+                url: '{{ path("app_entreprise_search") }}',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(searchData),
+                success: function (response) {
+                    if (response.success) {
+                        displayResults(response.results);
+                        updateStats(response.results);
+                        showSuccessAlert(response.message);
+                    } else {
+                        showErrorAlert(response.error || 'Erreur lors de la recherche');
+                    }
+                },
+                error: function (xhr) {
+                    let errorMessage = 'Une erreur s\'est produite lors de la recherche.';
+
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMessage = xhr.responseJSON.error;
+                    } else if (xhr.status === 0) {
+                        errorMessage = 'Impossible de contacter le serveur. Vérifiez votre connexion internet.';
+                    } else if (xhr.status >= 500) {
+                        errorMessage = 'Erreur serveur. Veuillez réessayer plus tard.';
+                    }
+
+                    showErrorAlert(errorMessage);
+                    hideResults();
+                    hideStats();
+                },
+                complete: function () {
+                    $('.loading-spinner').hide();
+                    $('#searchForm button[type="submit"]').prop('disabled', false);
+                }
+            });
+        }
+
+        // Affichage des résultats
+        function displayResults(results) {
+            if (!results || results.length === 0) {
+                showWarningAlert('Aucun résultat trouvé pour votre recherche.');
+                hideResults();
+                hideStats();
+                return;
+            }
+
+            const tbody = $('#resultsBody');
+            tbody.empty();
+
+            results.forEach(function (entreprise) {
+                const row = `
+                    <tr>
+                        <td>
+                            <div class="fw-bold">${escapeHtml(entreprise.nom_complet)}</div>
+                            ${entreprise.nom_raison_sociale !== entreprise.nom_complet ?
+                        '<small class="text-muted">' + escapeHtml(entreprise.nom_raison_sociale) + '</small>' : ''}
+                        </td>
+                        <td>${escapeHtml(entreprise.siren)}</td>
+                        <td>${escapeHtml(entreprise.siret)}</td>
+                        <td>${escapeHtml(entreprise.date_creation)}</td>
+                        <td>
+                            <div>${escapeHtml(entreprise.adresse)}</div>
+                            <small class="text-muted">${escapeHtml(entreprise.code_postal)} ${escapeHtml(entreprise.ville)}</small>
+                        </td>
+                        <td>${escapeHtml(entreprise.nature_juridique)}</td>
+                        <td>${escapeHtml(entreprise.activite_principale)}</td>
+                        <td>${escapeHtml(entreprise.section_activite_principale)}</td>
+                        <td>${escapeHtml(entreprise.dirigeants)}</td>
+                        <td>${escapeHtml(entreprise.tranche_effectifs)}</td>
+                        <td>${entreprise.nombre_etablissements}</td>
+                        <td>
+                            <span class="badge ${entreprise.etat_administratif === 'A' ? 'bg-success' : 'bg-danger'}">
+                                ${entreprise.etat_administratif === 'A' ? 'Active' : 'Cessée'}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+
+            $('#resultsCard').show();
+            initDataTable();
+
+            // Scroll vers les résultats
+            $('html, body').animate({
+                scrollTop: $('#resultsCard').offset().top - 100
+            }, 800);
+        }
+
+        // Mise à jour des statistiques
+        function updateStats(results) {
+            $('#totalResults').text(results.length);
+
+            // Calcul des statistiques
+            const activeCompanies = results.filter(e => e.etat_administratif === 'A').length;
+            $('#activeCompanies').text(activeCompanies);
+
+            // Secteur le plus représenté
+            const secteurs = {};
+            results.forEach(e => {
+                if (e.section_activite_principale) {
+                    secteurs[e.section_activite_principale] = (secteurs[e.section_activite_principale] || 0) + 1;
+                }
+            });
+
+            const topSecteur = Object.keys(secteurs).reduce((a, b) =>
+                secteurs[a] > secteurs[b] ? a : b, '');
+            $('#topSector').text(topSecteur || '-');
+
+            // Effectif moyen (approximation)
+            const effectifsNumeriques = results
+                .map(e => e.tranche_effectifs)
+                .filter(t => t && t !== 'N/A')
+                .map(t => {
+                    if (t.includes('0 salarié')) return 0;
+                    if (t.includes('1-2')) return 1.5;
+                    if (t.includes('3-5')) return 4;
+                    if (t.includes('6-9')) return 7.5;
+                    if (t.includes('10-19')) return 14.5;
+                    if (t.includes('20-49')) return 34.5;
+                    if (t.includes('50-99')) return 74.5;
+                    if (t.includes('100-199')) return 149.5;
+                    return 0;
+                });
+
+            const avgEff = effectifsNumeriques.length > 0
+                ? Math.round(effectifsNumeriques.reduce((a, b) => a + b, 0) / effectifsNumeriques.length)
+                : 0;
+            $('#avgEmployees').text(avgEff > 0 ? avgEff : '-');
+
+            $('#statsRow').show();
+        }
+
+        // Export CSV
+        $('#exportBtn').on('click', function () {
+            if (!currentSearchData) {
+                showWarningAlert('Aucune recherche à exporter.');
+                return;
+            }
+
+            $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Export en cours...');
+
+            $.ajax({
+                url: '{{ path("app_entreprise_export") }}',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(currentSearchData),
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (data) {
+                    const blob = new Blob([data], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'entreprises_' + new Date().toISOString().slice(0, 10) + '.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    showSuccessAlert('Export réalisé avec succès !');
+                },
+                error: function () {
+                    showErrorAlert('Erreur lors de l\'export.');
+                },
+                complete: function () {
+                    $('#exportBtn').prop('disabled', false).html('<i class="fas fa-download me-2"></i>Exporter CSV');
+                }
+            });
+        });
+
+        // Fonctions utilitaires
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showSuccessAlert(message) {
+            showAlert(message, 'success');
+        }
+
+        function showErrorAlert(message) {
+            showAlert(message, 'danger');
+        }
+
+        function showWarningAlert(message) {
+            showAlert(message, 'warning');
+        }
+
+        function showAlert(message, type) {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            $('#alertContainer').html(alertHtml);
+        }
+
+        function clearAlerts() {
+            $('#alertContainer').empty();
+        }
+
+        function hideResults() {
+            $('#resultsCard').hide();
+            if (dataTable) {
+                dataTable.destroy();
+                dataTable = null;
+            }
+        }
+
+        function hideStats() {
+            $('#statsRow').hide();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,91 @@
+{# templates/entreprise/search.html.twig #}
+{% extends 'base.html.twig' %}
+{% block body %}
+<div class="container mt-5">
+    <h2 class="mb-4">Recherche d'entreprises</h2>
+    <h4>Résultats ({{ entreprises|length }})</h4>
+    <form method="get" class="row g-3 border p-3 rounded bg-light shadow-sm">
+        <div class="col-md-3">
+            <label class="form-label">Date création min</label>
+            <input type="date" name="date_creation_min" class="form-control" value="{{ filters.date_creation_min }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Date création max</label>
+            <input type="date" name="date_creation_max" class="form-control" value="{{ filters.date_creation_max }}">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Département</label>
+            <input type="text" name="departement" class="form-control" value="{{ filters.departement }}">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Région</label>
+            <input type="text" name="region" class="form-control" value="{{ filters.region }}">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Ville</label>
+            <input type="text" name="ville" class="form-control" value="{{ filters.ville }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Code NAF</label>
+            <input type="text" name="code_naf" class="form-control" value="{{ filters.code_naf }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Forme juridique</label>
+            <input type="text" name="forme_juridique" class="form-control" value="{{ filters.forme_juridique }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Effectif</label>
+            <input type="text" name="effectif" class="form-control" value="{{ filters.effectif }}">
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary w-100">Rechercher</button>
+        </div>
+    </form>
+
+    <hr class="my-4">
+
+    <h4>Résultats</h4>
+    <div class="table-responsive mt-3">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nom</th>
+                    <th>Date de création</th>
+                    <th>SIRET</th>
+                    <th>Adresse</th>
+                    <th>Forme juridique</th>
+                    <th>Code APE</th>
+                    <th>Secteur</th>
+                    <th>Dirigeant</th>
+                    <th>Effectif</th>
+                    <th>Capital</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in entreprises %}
+                <tr>
+                    <td>{{ e.nom_complet ?? 'N/A' }}</td>
+                    <td>{{ e.date_creation|date('d/m/Y') }}</td>
+                    <td>{{ e.siege.siret }}</td>
+                    <td>{{ e.siege.libelle_commune }} {{ e.siege.code_postal }}</td>
+                    <td>{{ e.nature_juridique }}</td>
+                    <td>{{ e.siege.activite_principale}}</td>
+                    <td>{% if siege.activite_principale is defined %}
+                        {{ libelles_naf[siege.activite_principale]|default(siege.activite_principale) }}
+                        {% else %}
+                        Non renseignée
+                        {% endif %}</td>
+                    <td>{{ e.dirigeants[0].nom_complet ?? 'N/A' }}</td>
+                    <td>{{ e.tranche_effectif_salarie ?? 'N/A' }}</td>
+                    <td>{{ e.capital ?? 'N/A' }} €</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="10" class="text-center">Aucun résultat</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

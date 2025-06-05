@@ -1,0 +1,34 @@
+<IfModule mod_rewrite.c>
+    Options -MultiViews
+    RewriteEngine On
+
+    # Redirect non-www to www
+    RewriteCond %{HTTP_HOST} ^test.theagency-dz\.com [NC]
+    RewriteRule ^(.*)$ https://www.test.theagency-dz.com/$1 [L,R=301]
+
+    # Redirect to HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Remove /public/ from the URL if it's present
+    RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
+    RewriteRule ^ /%1 [L,NE,R=301]
+
+    # Serve files from the public directory
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # Don't rewrite files or directories
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # Rewrite everything else to index.php
+    RewriteRule ^(.*)$ public/index.php [QSA,L]
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
+
+# Protect the .htaccess file
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>

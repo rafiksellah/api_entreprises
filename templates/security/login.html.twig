@@ -1,0 +1,246 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - {{ parent() }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .auth-container {
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .auth-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: none;
+        overflow: hidden;
+    }
+
+    .auth-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+        padding: 2.5rem 2rem;
+    }
+
+    .auth-body {
+        padding: 2rem;
+    }
+
+    .form-floating {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-floating>.form-control {
+        height: calc(3.5rem + 2px);
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+
+    .form-floating>.form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .form-floating>label {
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .btn-login {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .form-check {
+        margin: 1.5rem 0;
+        padding-left: 2rem;
+    }
+
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+
+    .auth-footer {
+        text-align: center;
+        padding: 1rem 2rem 2rem;
+        border-top: 1px solid #e9ecef;
+        background: #f8f9fa;
+    }
+
+    .auth-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .auth-link:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    .alert {
+        border-radius: 10px;
+        border: none;
+        margin-bottom: 1.5rem;
+    }
+
+    .forgot-password {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .forgot-password a {
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .forgot-password a:hover {
+        color: #667eea;
+        text-decoration: underline;
+    }
+
+    .welcome-back {
+        margin-bottom: 0.5rem;
+        opacity: 0.9;
+    }
+
+    .login-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.8;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="auth-container">
+    <div class="card auth-card">
+        <div class="auth-header">
+            <div class="login-icon">
+                <i class="fas fa-sign-in-alt"></i>
+            </div>
+            <h2 class="mb-0">Bon retour !</h2>
+            <p class="welcome-back">Connectez-vous pour accéder à votre compte</p>
+        </div>
+
+        <div class="auth-body">
+            {% if error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+            {% endif %}
+
+            {% if app.user %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Vous êtes connecté en tant que {{ app.user.userIdentifier }}
+                <a href="{{ path('app_logout') }}" class="btn btn-sm btn-outline-primary ms-2">Se déconnecter</a>
+            </div>
+            {% else %}
+            <form method="post">
+                <div class="form-floating">
+                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control"
+                        placeholder="votre@email.com" autocomplete="email" required autofocus>
+                    <label for="inputEmail">
+                        <i class="fas fa-envelope me-2"></i>
+                        Adresse email
+                    </label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" name="password" id="inputPassword" class="form-control"
+                        placeholder="Mot de passe" autocomplete="current-password" required>
+                    <label for="inputPassword">
+                        <i class="fas fa-lock me-2"></i>
+                        Mot de passe
+                    </label>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="_remember_me" id="remember_me">
+                    <label class="form-check-label" for="remember_me">
+                        Se souvenir de moi
+                    </label>
+                </div>
+
+                <button class="btn btn-primary btn-login" type="submit">
+                    <i class="fas fa-sign-in-alt me-2"></i>
+                    Se connecter
+                </button>
+
+                <div class="forgot-password">
+                    <a href="#" onclick="alert('Fonctionnalité à venir')">
+                        <i class="fas fa-question-circle me-1"></i>
+                        Mot de passe oublié ?
+                    </a>
+                </div>
+            </form>
+            {% endif %}
+        </div>
+
+        <div class="auth-footer">
+            <p class="mb-0">
+                Pas encore de compte ?
+                <a href="{{ path('app_register') }}" class="auth-link">
+                    <i class="fas fa-user-plus me-1"></i>
+                    Créer un compte
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Auto-focus sur le champ email si vide
+        const emailInput = document.getElementById('inputEmail');
+        if (emailInput && !emailInput.value) {
+            emailInput.focus();
+        }
+
+        // Animation des labels flottants
+        const floatingInputs = document.querySelectorAll('.form-floating input');
+        floatingInputs.forEach(input => {
+            input.addEventListener('focus', function () {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function () {
+                if (!this.value) {
+                    this.parentElement.classList.remove('focused');
+                }
+            });
+
+            // Vérifier si le champ a déjà une valeur au chargement
+            if (input.value) {
+                input.parentElement.classList.add('focused');
+            }
+        });
+    });
+</script>
+{% endblock %}
